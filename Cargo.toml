@@ -1,0 +1,8 @@
+[package]
+name = "ReitoreSenpai"
+version = "0.1.0"
+authors = ["xqq <xqq@xqq.im>"]
+edition = "2018"
+
+[dependencies]
+sdl2 = "0.32.2"
