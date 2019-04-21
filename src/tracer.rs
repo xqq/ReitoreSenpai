@@ -1,4 +1,6 @@
 use rand::Rng;
+use scoped_threadpool::Pool;
+use std::time::{Duration, Instant};
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::sphere::Sphere;
@@ -27,27 +29,17 @@ fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     }
 }
 
-pub fn trace() {
-    let nx = 800;
-    let ny = 400;
+pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, Duration) {
+    let nx = width;
+    let ny = height;
     let ns = 100;
+    let threads: u32 = 8;
 
     println!("P3\n{} {}\n255", nx, ny);
 
-    let mut rng = rand::thread_rng();
     let camera = Camera::new();
-    let mut world = HitableList::default();
-    for j in (0..=(ny - 1)).rev() {
-        for i in 0..nx {
-            let mut col = Vec3(0.0, 0.0, 0.0);
 
-            for _s in 0..ns {
-                let u = (i as f32 + rng.gen_range(0.0, 1.0)) / nx as f32;
-                let v = (j as f32 + rng.gen_range(0.0, 1.0)) / ny as f32;
-                let r = camera.get_ray(u, v);
-                let _p = r.point_at_parameter(2.0);
-                col = col + color(&r, &world);
-            }
+    let mut world = HitableList::default();
     world.push(Box::new(Sphere::new(
         Vec3(0.0, 0.0, -1.0),
         0.5,
@@ -69,15 +61,49 @@ pub fn trace() {
         Box::new( Metal::new(Vec3(0.8, 0.8, 0.8), 0.4))
     )));
 
-            col = col / (ns as f32);
-            col = Vec3(col.r().sqrt(), col.g().sqrt(), col.b().sqrt());
+    let mut pool = Pool::new(threads);
 
-            let ir = (255.99 * col.0) as i32;
-            let ig = (255.99 * col.1) as i32;
-            let ib = (255.99 * col.2) as i32;
+    let now = Instant::now();
 
-            println!("{} {} {}", ir, ig, ib);
+    pool.scoped(|scope| {
+        let camera = &camera;
+        let world = &world;
+
+        for j in 0..ny {
+            let y = j;
+            let slice = split_slice_from_mut(buffer, y as usize * pitch, pitch);
+
+            scope.execute(move || {
+                let mut rng = rand::thread_rng();
+
+                for x in 0..nx {
+                    let mut col = Vec3(0.0, 0.0, 0.0);
+
+                    for _s in 0..ns {
+                        let u = (x as f32 + rng.gen_range(0.0, 1.0)) / nx as f32;
+                        let v = (y as f32 + rng.gen_range(0.0, 1.0)) / ny as f32;
+                        let r = camera.get_ray(u, v);
+                        let _p = r.point_at_parameter(2.0);
+                        col += color(&r, world, 0);
+                    }
+
+                    col /= ns as f32;
+                    col = Vec3(col.r().sqrt(), col.g().sqrt(), col.b().sqrt());
+
+                    let ir = (255.99 * col.0) as u8;
+                    let ig = (255.99 * col.1) as u8;
+                    let ib = (255.99 * col.2) as u8;
+
+                    let offset = x as usize * 3;
+                    slice[offset] = ir;
+                    slice[offset + 1] = ig;
+                    slice[offset + 2] = ib;
+
+                    // println!("{} {} {}", ir, ig, ib);
+                }
+            });
         }
-    }
+    });
 
+    (threads, now.elapsed())
 }

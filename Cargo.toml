@@ -5,5 +5,7 @@ authors = ["xqq <xqq@xqq.im>"]
 edition = "2018"
 
 [dependencies]
-sdl2 = "0.32.2"
+png = "0.14.0"
 rand = "0.6.5"
+sdl2 = "0.32.2"
+scoped_threadpool = "0.1.9"
