@@ -10,6 +10,10 @@ mod sphere;
 mod tracer;
 mod hitable_list;
 mod camera;
+mod material;
+mod metal;
+mod lambertian;
+mod utils;
 
 fn main() {
     tracer::trace()

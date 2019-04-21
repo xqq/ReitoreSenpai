@@ -11,7 +11,8 @@ pub struct HitableList {
 impl Hitable for HitableList {
 
     fn hit(&self, ray: &Ray, t_min: f32, t_max: f32) -> (bool, Option<HitRecord>) {
-        let mut hit_record = HitRecord::default();
+        let hit_record = std::mem::MaybeUninit::<HitRecord>::uninitialized();
+        let mut hit_record = unsafe { hit_record.into_initialized() };
 
         let mut hit_anything = false;
         let mut closest_so_far = t_max;
@@ -24,7 +25,11 @@ impl Hitable for HitableList {
             }
         }
 
-        (hit_anything, Some(hit_record))
+        if hit_anything {
+            (true, Some(hit_record))
+        } else {
+            (false, None)
+        }
     }
 
 }

@@ -5,27 +5,21 @@ use crate::sphere::Sphere;
 use crate::camera::Camera;
 use crate::hitable::*;
 use crate::hitable_list::HitableList;
+use crate::lambertian::Lambertian;
+use crate::metal::Metal;
+use crate::utils::*;
 
-fn random_in_unit_sphere() -> Vec3 {
-    let mut rnd = rand::thread_rng();
-    let mut p;
-
-    loop {
-        p = 2.0 * Vec3(rnd.gen_range(0.0, 1.0), rnd.gen_range(0.0, 1.0), rnd.gen_range(0.0, 1.0));
-        p = p - Vec3(1.0, 1.0, 1.0);
-
-        if p.squared_length() < 1.0 {
-            break;
+fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
+    if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
+        if depth < 50 {
+            if let (true, Some(scatter)) = record.material.scatter(r, &record) {
+                scatter.attenuation * color(&scatter.scattered, world, depth + 1)
+            } else {
+                Vec3::default()
+            }
+        } else {
+            Vec3::default()
         }
-    }
-
-    p
-}
-
-fn color(r: &Ray, hitable: &dyn Hitable) -> Vec3 {
-    if let (true, Some(record)) = hitable.hit(r, 0.001, std::f32::MAX) {
-        let target = record.hit_point + record.normal + random_in_unit_sphere();
-        0.5 * color(&Ray::from_a_b(record.hit_point, target - record.hit_point), hitable)
     } else {
         let unit_direction = r.direction().to_unit_vector();
         let t = 0.5 * (unit_direction.y() + 1.0);
@@ -43,9 +37,6 @@ pub fn trace() {
     let mut rng = rand::thread_rng();
     let camera = Camera::new();
     let mut world = HitableList::default();
-    world.push(Box::new(Sphere::new(Vec3(0.0, 0.0, -1.0), 0.5)));
-    world.push(Box::new(Sphere::new(Vec3(0.0, -100.5, -1.0), 100.0)));
-
     for j in (0..=(ny - 1)).rev() {
         for i in 0..nx {
             let mut col = Vec3(0.0, 0.0, 0.0);
@@ -57,6 +48,26 @@ pub fn trace() {
                 let _p = r.point_at_parameter(2.0);
                 col = col + color(&r, &world);
             }
+    world.push(Box::new(Sphere::new(
+        Vec3(0.0, 0.0, -1.0),
+        0.5,
+        Box::new(Lambertian { albedo: Vec3(0.8, 0.3, 0.3) })
+    )));
+    world.push(Box::new(Sphere::new(
+        Vec3(0.0, -100.5, -1.0),
+        100.0,
+        Box::new( Lambertian { albedo: Vec3(0.8, 0.8, 0.0) })
+    )));
+    world.push(Box::new(Sphere::new(
+        Vec3(1.0, 0.0, -1.0),
+        0.5,
+        Box::new( Metal::new(Vec3(0.8, 0.6, 0.2), 0.2))
+    )));
+    world.push(Box::new(Sphere::new(
+        Vec3(-1.0, 0.0, -1.0),
+        0.5,
+        Box::new( Metal::new(Vec3(0.8, 0.8, 0.8), 0.4))
+    )));
 
             col = col / (ns as f32);
             col = Vec3(col.r().sqrt(), col.g().sqrt(), col.b().sqrt());
