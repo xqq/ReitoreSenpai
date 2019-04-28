@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 use rand::Rng;
 use std::slice;
 use crate::vec3::Vec3;
@@ -22,7 +24,7 @@ pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
     *v - 2.0 * Vec3::dot(v, normal) * normal
 }
 
-pub fn split_slice_from_mut<T: Sized>(slice: &[T], from: usize, length: usize) -> &mut [T] {
+pub fn split_chunk_from_mut<T: Sized>(slice: &[T], from: usize, length: usize) -> &mut [T] {
     let ptr = slice.as_ptr() as *mut T;
 
     unsafe {

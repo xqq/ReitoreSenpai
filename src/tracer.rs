@@ -9,7 +9,6 @@ use crate::hitable::*;
 use crate::hitable_list::HitableList;
 use crate::lambertian::Lambertian;
 use crate::metal::Metal;
-use crate::utils::*;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -68,10 +67,11 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
     pool.scoped(|scope| {
         let camera = &camera;
         let world = &world;
+        let mut chunks = buffer.chunks_mut(pitch);
 
         for j in 0..ny {
             let y = j;
-            let slice = split_slice_from_mut(buffer, y as usize * pitch, pitch);
+            let chunk = chunks.next().unwrap();
 
             scope.execute(move || {
                 let mut rng = rand::thread_rng();
@@ -95,9 +95,9 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
                     let ib = (255.99 * col.2) as u8;
 
                     let offset = x as usize * 3;
-                    slice[offset] = ir;
-                    slice[offset + 1] = ig;
-                    slice[offset + 2] = ib;
+                    chunk[offset] = ir;
+                    chunk[offset + 1] = ig;
+                    chunk[offset + 2] = ib;
 
                     // println!("{} {} {}", ir, ig, ib);
                 }
