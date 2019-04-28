@@ -17,7 +17,7 @@ pub fn window_main_loop() {
         .build()
         .unwrap();
 
-    let mut canvas = window.into_canvas().build().unwrap();
+    let mut canvas = window.into_canvas().present_vsync().build().unwrap();
     let texture_creator = canvas.texture_creator();
 
     let mut texture = texture_creator.create_texture_streaming(PixelFormatEnum::RGB24, texture_width, texture_height)

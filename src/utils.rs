@@ -2,8 +2,6 @@ use rand::Rng;
 use std::slice;
 use crate::vec3::Vec3;
 
-
-
 pub fn random_in_unit_sphere() -> Vec3 {
     let mut rnd = rand::thread_rng();
     let mut p;
