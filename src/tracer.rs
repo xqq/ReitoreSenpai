@@ -3,13 +3,12 @@ use scoped_threadpool::Pool;
 use std::time::{Duration, Instant};
 use crate::vec3::Vec3;
 use crate::ray::Ray;
-use crate::sphere::Sphere;
 use crate::camera::Camera;
 use crate::hitable::*;
 use crate::hitable_list::HitableList;
-use crate::lambertian::Lambertian;
-use crate::metal::Metal;
-use crate::dielectric::Dielectric;
+use crate::scene::Scene;
+use crate::playground_scene::PlaygroundScene;
+use crate::random_scene::RandomScene;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -50,32 +49,8 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
         dist_to_focus
     );
 
-    let mut world = HitableList::default();
-    world.push(Box::new(Sphere::new(
-        Vec3(0.0, 0.0, -1.0),
-        0.5,
-        Box::new(Lambertian { albedo: Vec3(0.1, 0.2, 0.5) })
-    )));
-    world.push(Box::new(Sphere::new(
-        Vec3(0.0, -100.5, -1.0),
-        100.0,
-        Box::new( Lambertian { albedo: Vec3(0.8, 0.8, 0.0) })
-    )));
-    world.push(Box::new(Sphere::new(
-        Vec3(1.0, 0.0, -1.0),
-        0.5,
-        Box::new( Metal::new(Vec3(0.8, 0.6, 0.2), 1.0))
-    )));
-    world.push(Box::new(Sphere::new(
-        Vec3(-1.0, 0.0, -1.0),
-        0.5,
-        Box::new( Dielectric { ref_idx: 1.5 })
-    )));
-    world.push(Box::new(Sphere::new(
-        Vec3(-1.0, 0.0, -1.0),
-        -0.45,
-        Box::new( Dielectric { ref_idx: 1.5 })
-    )));
+    let scene = RandomScene {};
+    let world = scene.generate();
 
     let mut pool = Pool::new(threads);
 

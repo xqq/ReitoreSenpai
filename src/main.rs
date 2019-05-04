@@ -22,6 +22,9 @@ mod metal;
 mod lambertian;
 mod dielectric;
 mod utils;
+mod scene;
+mod random_scene;
+mod playground_scene;
 
 fn main() {
     window_main_loop()
