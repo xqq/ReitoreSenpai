@@ -35,12 +35,19 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
     let ns = 100;
     let threads: u32 = 8;
 
+    let look_from = Vec3(3.0, 3.0, 2.0);
+    let look_at = Vec3(0.0, 0.0, -1.0);
+    let dist_to_focus = (look_from - look_at).length();
+    let aperture: f32 = 2.0;
+
     let camera = Camera::new(
-        Vec3(-1.0, 1.0, 0.5),
-        Vec3(0.0, 0.0, -1.0),
+        look_from,
+        look_at,
         Vec3(0.0, 1.0, 0.0),
-        90.0,
-        width as f32 / height as f32
+        20.0,
+        width as f32 / height as f32,
+        aperture,
+        dist_to_focus
     );
 
     let mut world = HitableList::default();
