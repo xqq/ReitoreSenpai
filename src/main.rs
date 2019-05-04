@@ -20,6 +20,7 @@ mod camera;
 mod material;
 mod metal;
 mod lambertian;
+mod dielectric;
 mod utils;
 
 fn main() {

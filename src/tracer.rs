@@ -9,6 +9,7 @@ use crate::hitable::*;
 use crate::hitable_list::HitableList;
 use crate::lambertian::Lambertian;
 use crate::metal::Metal;
+use crate::dielectric::Dielectric;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -34,15 +35,19 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
     let ns = 100;
     let threads: u32 = 8;
 
-    println!("P3\n{} {}\n255", nx, ny);
-
-    let camera = Camera::new();
+    let camera = Camera::new(
+        Vec3(-1.0, 1.0, 0.5),
+        Vec3(0.0, 0.0, -1.0),
+        Vec3(0.0, 1.0, 0.0),
+        90.0,
+        width as f32 / height as f32
+    );
 
     let mut world = HitableList::default();
     world.push(Box::new(Sphere::new(
         Vec3(0.0, 0.0, -1.0),
         0.5,
-        Box::new(Lambertian { albedo: Vec3(0.8, 0.3, 0.3) })
+        Box::new(Lambertian { albedo: Vec3(0.1, 0.2, 0.5) })
     )));
     world.push(Box::new(Sphere::new(
         Vec3(0.0, -100.5, -1.0),
@@ -52,12 +57,17 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
     world.push(Box::new(Sphere::new(
         Vec3(1.0, 0.0, -1.0),
         0.5,
-        Box::new( Metal::new(Vec3(0.8, 0.6, 0.2), 0.2))
+        Box::new( Metal::new(Vec3(0.8, 0.6, 0.2), 1.0))
     )));
     world.push(Box::new(Sphere::new(
         Vec3(-1.0, 0.0, -1.0),
         0.5,
-        Box::new( Metal::new(Vec3(0.8, 0.8, 0.8), 0.4))
+        Box::new( Dielectric { ref_idx: 1.5 })
+    )));
+    world.push(Box::new(Sphere::new(
+        Vec3(-1.0, 0.0, -1.0),
+        -0.45,
+        Box::new( Dielectric { ref_idx: 1.5 })
     )));
 
     let mut pool = Pool::new(threads);
@@ -98,8 +108,6 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
                     chunk[offset] = ir;
                     chunk[offset + 1] = ig;
                     chunk[offset + 2] = ib;
-
-                    // println!("{} {} {}", ir, ig, ib);
                 }
             });
         }
