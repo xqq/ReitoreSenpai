@@ -9,7 +9,7 @@ pub fn random_in_unit_sphere() -> Vec3 {
     let mut p;
 
     loop {
-        p = 2.0 * Vec3(rnd.gen_range(0.0, 1.0), rnd.gen_range(0.0, 1.0), rnd.gen_range(0.0, 1.0));
+        p = 2.0 * Vec3(rnd.gen(), rnd.gen(), rnd.gen());
         p -= Vec3(1.0, 1.0, 1.0);
 
         if p.squared_length() < 1.0 {
@@ -25,7 +25,7 @@ pub fn random_in_unit_disk() -> Vec3 {
     let mut p;
 
     loop {
-        p = 2.0 * Vec3(rnd.gen_range(0.0, 1.0), rnd.gen_range(0.0, 1.0), 0.0) - Vec3(1.0, 1.0, 0.0);
+        p = 2.0 * Vec3(rnd.gen(), rnd.gen(), 0.0) - Vec3(1.0, 1.0, 0.0);
 
         if Vec3::dot(&p, &p) < 1.0 {
             break;

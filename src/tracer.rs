@@ -97,8 +97,8 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
                     let mut col = Vec3(0.0, 0.0, 0.0);
 
                     for _s in 0..ns {
-                        let u = (x as f32 + rng.gen_range(0.0, 1.0)) / nx as f32;
-                        let v = (y as f32 + rng.gen_range(0.0, 1.0)) / ny as f32;
+                        let u = (x as f32 + rng.gen::<f32>()) / nx as f32;
+                        let v = (y as f32 + rng.gen::<f32>()) / ny as f32;
                         let r = camera.get_ray(u, v);
                         let _p = r.point_at_parameter(2.0);
                         col += color(&r, world, 0);

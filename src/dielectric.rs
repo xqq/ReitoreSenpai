@@ -36,7 +36,7 @@ impl Material for Dielectric {
             reflect_prob = 1.0;
         }
 
-        if rand::thread_rng().gen_range(0.0, 1.0) < reflect_prob {
+        if rand::thread_rng().gen::<f32>() < reflect_prob {
             let reflected = reflect(&r_in.direction(), &record.normal);
             (true, Some(ScatterResult {
                 attenuation: Vec3(1.0, 1.0, 1.0),
