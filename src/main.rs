@@ -27,6 +27,7 @@ mod utils;
 mod scene;
 mod random_scene;
 mod playground_scene;
+mod yjsnpi_scene;
 
 fn main() {
     window::window_main_loop()

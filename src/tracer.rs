@@ -11,6 +11,7 @@ use crate::camera::Camera;
 use crate::defocus_camera::DefocusCamera;
 use crate::standard_camera::StandardCamera;
 use crate::utils::as_u32_slice_mut;
+use crate::yjsnpi_scene::YjsnpiScene;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -65,7 +66,7 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
 
         for j in (0..ny).rev() {
             let y = j;
-            let chunk = as_u32_slice_mut(chunks.next().unwrap());
+            let pixel_line = as_u32_slice_mut(chunks.next().unwrap());
 
             scope.execute(move || {
                 let mut rng = rand::thread_rng();
@@ -77,7 +78,6 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
                         let u = (x as f32 + rng.gen::<f32>()) / nx as f32;
                         let v = (y as f32 + rng.gen::<f32>()) / ny as f32;
                         let r = camera.get_ray(u, v);
-                        let _p = r.point_at_parameter(2.0);
                         col += color(&r, world, 0);
                     }
 
@@ -89,7 +89,7 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
                     let ib = (255.99 * col.2) as u32;
 
                     let value: u32 = ir | ig << 8 | ib << 16 | 255 << 24;
-                    chunk[x as usize] = value;
+                    pixel_line[x as usize] = value;
                 }
             });
         }
