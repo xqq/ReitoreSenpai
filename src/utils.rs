@@ -86,7 +86,10 @@ pub fn write_png_file(file_path: String, width: u32, height: u32, buffer: &[u8])
     let ref mut w = BufWriter::new(file);
 
     let mut encoder = png::Encoder::new(w, width, height);
-    encoder.set(png::ColorType::RGBA).set(png::BitDepth::Eight);
+    encoder
+        .set(png::ColorType::RGBA)
+        .set(png::BitDepth::Eight)
+        .set(png::Compression::Best);
     let mut writer = encoder.write_header().unwrap();
 
     writer.write_image_data(&buffer).unwrap();
