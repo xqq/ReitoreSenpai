@@ -11,12 +11,12 @@ pub struct Sphere {
 
 impl Sphere {
 
-    pub fn new(center: Vec3, radius: f32, material: Box<dyn Material>) -> Sphere {
-        Sphere {
+    pub fn new(center: Vec3, radius: f32, material: Box<dyn Material>) -> Box<dyn Hitable> {
+        Box::new(Sphere {
             center,
             radius,
             material
-        }
+        })
     }
 
 }
