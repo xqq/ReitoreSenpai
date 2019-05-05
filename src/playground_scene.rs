@@ -1,10 +1,10 @@
 use crate::vec3::Vec3;
-use crate::scene::Scene;
 use crate::hitable_list::HitableList;
 use crate::sphere::Sphere;
 use crate::lambertian::Lambertian;
 use crate::dielectric::Dielectric;
 use crate::metal::Metal;
+use crate::scene::Scene;
 
 pub struct PlaygroundScene {}
 

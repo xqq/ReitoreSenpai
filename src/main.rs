@@ -17,6 +17,8 @@ mod sphere;
 mod tracer;
 mod hitable_list;
 mod camera;
+mod standard_camera;
+mod defocus_camera;
 mod material;
 mod metal;
 mod lambertian;

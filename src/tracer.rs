@@ -3,12 +3,14 @@ use scoped_threadpool::Pool;
 use std::time::{Duration, Instant};
 use crate::vec3::Vec3;
 use crate::ray::Ray;
-use crate::camera::Camera;
 use crate::hitable::*;
 use crate::hitable_list::HitableList;
 use crate::scene::Scene;
 use crate::playground_scene::PlaygroundScene;
 use crate::random_scene::RandomScene;
+use crate::camera::Camera;
+use crate::defocus_camera::DefocusCamera;
+use crate::standard_camera::StandardCamera;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -34,12 +36,12 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
     let ns = 100;
     let threads: u32 = 8;
 
-    let look_from = Vec3(3.0, 3.0, 2.0);
-    let look_at = Vec3(0.0, 0.0, -1.0);
-    let dist_to_focus = (look_from - look_at).length();
-    let aperture: f32 = 2.0;
+    let look_from = Vec3(13.0, 2.0, 3.0);
+    let look_at = Vec3(0.0, 0.0, 0.0);
+    let dist_to_focus: f32 = 10.0;
+    let aperture: f32 = 0.1;
 
-    let camera = Camera::new(
+    let camera = DefocusCamera::new(
         look_from,
         look_at,
         Vec3(0.0, 1.0, 0.0),
