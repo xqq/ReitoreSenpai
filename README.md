@@ -14,6 +14,9 @@ cargo build --release
 ```
 
 ## Senpai
+```bash
+out.png
+```
 ![yjsnpi.png](screenshots/yjsnpi.png)
 
 ## Reference
