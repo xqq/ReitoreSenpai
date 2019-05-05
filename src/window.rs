@@ -3,6 +3,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::PixelFormatEnum;
 use crate::tracer::trace;
+use crate::utils::write_png_file;
 
 pub fn window_main_loop() {
     let texture_width: u32 = 1920;
@@ -30,6 +31,7 @@ pub fn window_main_loop() {
         let (threads, duration) = trace(buffer, pitch, texture_width, texture_height);
         let window = canvas.window_mut();
         window.set_title(format!("ReitoreSenpai  threads: {}, elapsed: {}", threads, duration.as_float_secs()).as_ref()).unwrap();
+        write_png_file(r"out.png".to_string(), texture_width, texture_height, buffer);
     }).unwrap();
 
     canvas.clear();

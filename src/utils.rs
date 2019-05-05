@@ -1,7 +1,11 @@
 #![allow(unused)]
 
 use rand::Rng;
+use png::HasParameters;
 use std::slice;
+use std::path::Path;
+use std::fs::File;
+use std::io::BufWriter;
 use crate::vec3::Vec3;
 
 pub fn random_in_unit_sphere() -> Vec3 {
@@ -76,3 +80,14 @@ pub fn as_u32_slice_mut(slice: &mut [u8]) -> &mut [u32] {
     }
 }
 
+pub fn write_png_file(file_path: String, width: u32, height: u32, buffer: &[u8]) {
+    let path = Path::new(&file_path);
+    let file = File::create(path).unwrap();
+    let ref mut w = BufWriter::new(file);
+
+    let mut encoder = png::Encoder::new(w, width, height);
+    encoder.set(png::ColorType::RGBA).set(png::BitDepth::Eight);
+    let mut writer = encoder.write_header().unwrap();
+
+    writer.write_image_data(&buffer).unwrap();
+}
