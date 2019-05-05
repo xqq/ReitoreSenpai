@@ -61,6 +61,11 @@ pub fn schlick(cosine: f32, ref_idx: f32) -> f32 {
     r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
 
+pub fn nearly_equal(a: f32, b: f32) -> bool {
+    const EPSILON: f32 = 1e-6;
+    (a - EPSILON <= b) && (b <= a + EPSILON)
+}
+
 pub fn split_chunk_from_mut<T: Sized>(slice: &[T], from: usize, length: usize) -> &mut [T] {
     let ptr = slice.as_ptr() as *mut T;
 

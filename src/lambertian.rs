@@ -4,6 +4,7 @@ use crate::hitable::HitRecord;
 use crate::material::*;
 use crate::utils::*;
 
+// diffuse
 pub struct Lambertian {
     albedo: Vec3
 }

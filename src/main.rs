@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 #![feature(maybe_uninit)]
 #![feature(duration_float)]
+#![feature(range_contains)]
 #![feature(nll)]
 
 extern crate rand;
@@ -12,6 +13,7 @@ mod vec3;
 mod ray;
 mod hitable;
 mod sphere;
+mod surface;
 mod tracer;
 mod hitable_list;
 mod camera;
