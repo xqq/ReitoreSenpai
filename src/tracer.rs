@@ -4,13 +4,13 @@ use std::time::{Duration, Instant};
 use crate::vec3::Vec3;
 use crate::ray::Ray;
 use crate::hitable::*;
-use crate::hitable_list::HitableList;
 use crate::scene::Scene;
 use crate::playground_scene::PlaygroundScene;
 use crate::random_scene::RandomScene;
 use crate::camera::Camera;
 use crate::defocus_camera::DefocusCamera;
 use crate::standard_camera::StandardCamera;
+use crate::utils::as_u32_slice_mut;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -63,9 +63,9 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
         let world = &world;
         let mut chunks = buffer.chunks_mut(pitch);
 
-        for j in 0..ny {
+        for j in (0..ny).rev() {
             let y = j;
-            let chunk = chunks.next().unwrap();
+            let chunk = as_u32_slice_mut(chunks.next().unwrap());
 
             scope.execute(move || {
                 let mut rng = rand::thread_rng();
@@ -84,14 +84,12 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
                     col /= ns as f32;
                     col = Vec3(col.r().sqrt(), col.g().sqrt(), col.b().sqrt());
 
-                    let ir = (255.99 * col.0) as u8;
-                    let ig = (255.99 * col.1) as u8;
-                    let ib = (255.99 * col.2) as u8;
+                    let ir = (255.99 * col.0) as u32;
+                    let ig = (255.99 * col.1) as u32;
+                    let ib = (255.99 * col.2) as u32;
 
-                    let offset = x as usize * 3;
-                    chunk[offset] = ir;
-                    chunk[offset + 1] = ig;
-                    chunk[offset + 2] = ib;
+                    let value: u32 = ir | ig << 8 | ib << 16 | 255 << 24;
+                    chunk[x as usize] = value;
                 }
             });
         }

@@ -66,3 +66,13 @@ pub fn split_chunk_from_mut<T: Sized>(slice: &[T], from: usize, length: usize) -
         slice::from_raw_parts_mut(ptr.add(from), length)
     }
 }
+
+pub fn as_u32_slice_mut(slice: &mut [u8]) -> &mut [u32] {
+    unsafe {
+        std::slice::from_raw_parts_mut(
+            slice.as_mut_ptr() as *mut u32,
+            slice.len() / 4
+        )
+    }
+}
+

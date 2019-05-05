@@ -7,8 +7,6 @@ extern crate rand;
 extern crate sdl2;
 extern crate scoped_threadpool;
 
-use crate::window::window_main_loop;
-
 mod window;
 mod vec3;
 mod ray;
@@ -29,5 +27,5 @@ mod random_scene;
 mod playground_scene;
 
 fn main() {
-    window_main_loop()
+    window::window_main_loop()
 }
