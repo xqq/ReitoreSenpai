@@ -12,17 +12,17 @@ pub struct Metal {
 
 impl Metal {
 
-    pub fn new(albedo: Vec3, f: f32) -> Metal {
+    pub fn new(albedo: Vec3, f: f32) -> Box<dyn Material> {
         let fuzz = if f < 1.0 {
             f
         } else {
             1.0
         };
 
-        Metal {
+        Box::new(Metal {
             albedo,
             fuzz
-        }
+        })
     }
 
 }

@@ -7,7 +7,17 @@ use crate::material::ScatterResult;
 use crate::utils::*;
 
 pub struct Dielectric {
-    pub ref_idx: f32
+    ref_idx: f32
+}
+
+impl Dielectric {
+
+    pub fn new(ref_idx: f32) -> Box<dyn Material> {
+        Box::new(Dielectric {
+            ref_idx
+        })
+    }
+
 }
 
 impl Material for Dielectric {

@@ -5,7 +5,17 @@ use crate::material::*;
 use crate::utils::*;
 
 pub struct Lambertian {
-    pub albedo: Vec3
+    albedo: Vec3
+}
+
+impl Lambertian {
+
+    pub fn new(albedo: Vec3) -> Box<dyn Material> {
+        Box::new(Lambertian {
+            albedo
+        })
+    }
+
 }
 
 impl Material for Lambertian {

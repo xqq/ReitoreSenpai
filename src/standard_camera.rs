@@ -1,7 +1,6 @@
 use std::f32;
 use crate::vec3::Vec3;
 use crate::ray::Ray;
-use crate::utils::*;
 use crate::camera::Camera;
 
 pub struct StandardCamera {
