@@ -25,9 +25,10 @@ fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
             Vec3::default()
         }
     } else {
-        let unit_direction = r.direction().to_unit_vector();
-        let t = 0.5 * (unit_direction.y() + 1.0);
-        (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0)
+//        let unit_direction = r.direction().to_unit_vector();
+//        let t = 0.5 * (unit_direction.y() + 1.0);
+//        (1.0 - t) * Vec3(1.0, 1.0, 1.0) + t * Vec3(0.5, 0.7, 1.0)
+        Vec3(1.0, 1.0, 1.0)
     }
 }
 
@@ -42,17 +43,26 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
     let dist_to_focus: f32 = 10.0;
     let aperture: f32 = 0.1;
 
-    let camera = DefocusCamera::new(
-        look_from,
-        look_at,
+//    let camera = DefocusCamera::new(
+//        look_from,
+//        look_at,
+//        Vec3(0.0, 1.0, 0.0),
+//        20.0,
+//        width as f32 / height as f32,
+//        aperture,
+//        dist_to_focus
+//    );
+
+    // BasicCamera
+    let camera = StandardCamera::new(
+        Vec3(12.0, 12.0, 12.0),
+        Vec3(3.0, 2.0, 3.0),
         Vec3(0.0, 1.0, 0.0),
-        20.0,
-        width as f32 / height as f32,
-        aperture,
-        dist_to_focus
+        45.0,
+        width as f32 / height as f32
     );
 
-    let scene = RandomScene {};
+    let scene = YjsnpiScene {};
     let world = scene.generate();
 
     let mut pool = Pool::new(threads);

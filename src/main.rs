@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+#![allow(unused)]
 #![feature(maybe_uninit)]
 #![feature(duration_float)]
 #![feature(range_contains)]
