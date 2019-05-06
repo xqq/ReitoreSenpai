@@ -1,19 +1,39 @@
 #![allow(unused)]
 
 use rand::Rng;
+use rand::SeedableRng;
+use rand_xorshift::XorShiftRng;
 use png::HasParameters;
+use std::cell::UnsafeCell;
 use std::slice;
 use std::path::Path;
 use std::fs::File;
 use std::io::BufWriter;
 use crate::vec3::Vec3;
 
+thread_local!(
+    static THREAD_XORSHIFT_RNG: UnsafeCell<XorShiftRng> = {
+        let mut rng = XorShiftRng::from_rng(rand::thread_rng()).unwrap();
+
+        UnsafeCell::new(rng)
+    }
+);
+
+pub fn fast_thread_rng() -> &'static mut XorShiftRng {
+    let rng = THREAD_XORSHIFT_RNG.with(|t| {
+        unsafe {
+            &mut *t.get()
+        }
+    });
+    rng
+}
+
 pub fn random_in_unit_sphere() -> Vec3 {
-    let mut rnd = rand::thread_rng();
+    let rng = fast_thread_rng();
     let mut p;
 
     loop {
-        p = 2.0 * Vec3(rnd.gen(), rnd.gen(), rnd.gen());
+        p = 2.0 * Vec3(rng.gen(), rng.gen(), rng.gen());
         p -= Vec3(1.0, 1.0, 1.0);
 
         if p.squared_length() < 1.0 {
@@ -25,11 +45,11 @@ pub fn random_in_unit_sphere() -> Vec3 {
 }
 
 pub fn random_in_unit_disk() -> Vec3 {
-    let mut rnd = rand::thread_rng();
+    let rng = fast_thread_rng();
     let mut p;
 
     loop {
-        p = 2.0 * Vec3(rnd.gen(), rnd.gen(), 0.0) - Vec3(1.0, 1.0, 0.0);
+        p = 2.0 * Vec3(rng.gen(), rng.gen(), 0.0) - Vec3(1.0, 1.0, 0.0);
 
         if Vec3::dot(&p, &p) < 1.0 {
             break;

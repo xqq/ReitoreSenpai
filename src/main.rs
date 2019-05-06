@@ -7,6 +7,7 @@
 
 extern crate rand;
 extern crate sdl2;
+extern crate rand_xorshift;
 extern crate scoped_threadpool;
 
 mod window;

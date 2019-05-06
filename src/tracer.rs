@@ -12,6 +12,7 @@ use crate::defocus_camera::DefocusCamera;
 use crate::standard_camera::StandardCamera;
 use crate::utils::as_u32_slice_mut;
 use crate::yjsnpi_scene::YjsnpiScene;
+use crate::utils::*;
 
 fn color<T: Hitable>(r: &Ray, world: &T, depth: i32) -> Vec3 {
     if let (true, Some(record)) = world.hit(r, 0.001, std::f32::MAX) {
@@ -79,7 +80,7 @@ pub fn trace(buffer: &mut [u8], pitch: usize, width: u32, height: u32) -> (u32, 
             let pixel_line = as_u32_slice_mut(chunks.next().unwrap());
 
             scope.execute(move || {
-                let mut rng = rand::thread_rng();
+                let rng = fast_thread_rng();
 
                 for x in 0..nx {
                     let mut col = Vec3(0.0, 0.0, 0.0);

@@ -1,11 +1,12 @@
 use crate::vec3::Vec3;
 use crate::hitable_list::HitableList;
-use rand::{thread_rng, Rng};
+use rand::Rng;
 use crate::sphere::Sphere;
 use crate::lambertian::Lambertian;
 use crate::dielectric::Dielectric;
 use crate::metal::Metal;
 use crate::scene::Scene;
+use crate::utils::*;
 
 pub struct RandomScene {
 
@@ -25,7 +26,7 @@ impl Scene for RandomScene {
             )
         ));
 
-        let mut rng = thread_rng();
+        let rng = fast_thread_rng();
 
         for a in -11..11 {
             for b in -11..11 {
