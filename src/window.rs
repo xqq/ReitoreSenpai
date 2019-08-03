@@ -32,7 +32,7 @@ pub fn window_main_loop() {
     texture.with_lock(None, |buffer: &mut [u8], pitch: usize| {
         let (threads, duration) = trace(buffer, pitch, texture_width, texture_height);
         let window = canvas.window_mut();
-        window.set_title(format!("ReitoreSenpai  threads: {}, elapsed: {}", threads, duration.as_float_secs()).as_ref()).unwrap();
+        window.set_title(format!("ReitoreSenpai  threads: {}, elapsed: {}", threads, duration.as_secs_f32()).as_ref()).unwrap();
         write_png_file(r"out.png".to_string(), texture_width, texture_height, buffer);
     }).unwrap();
 
